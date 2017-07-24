@@ -849,7 +849,15 @@ namespace Tpetra {
      */
     global_size_t getGlobalNumEntries() const;
 
-    //! Returns the local number of entries in the graph.
+    /// \brief The local number of entries in the graph.
+    ///
+    /// "Local" means "local to the calling (MPI) process."
+    ///
+    /// \warning If the graph is not fill complete, this may launch a
+    ///   thread-parallel computational kernel.  This is because we do
+    ///   not store the number of entries as a separate integer field,
+    ///   since doing so and keeping it updated would hinder
+    ///   thread-parallel insertion of new entries.  See #1357.
     size_t getNodeNumEntries() const;
 
     //! \brief Returns the current number of entries on this node in the specified global row.
@@ -864,22 +872,43 @@ namespace Tpetra {
     ///   <tt>Teuchos::OrdinalTraits<size_t>::invalid()</tt>.
     size_t getNumEntriesInLocalRow (LocalOrdinal localRow) const;
 
-    //! \brief Returns the total number of indices allocated for the graph, across all rows on this node.
-    /*! This is the allocation available to the user. Actual allocation may be larger, for example, after
-      calling fillComplete(), and thus this does not necessarily reflect the memory consumption of the
-      this graph.
+    /// \brief The local number of indices allocated for the graph,
+    ///   over all rows on the calling (MPI) process.
+    ///
+    /// "Local" means "local to the calling (MPI) process."
+    ///
+    /// \warning If the graph is not fill complete, this may require
+    ///   computation.  This is because we do not store the allocation
+    ///   count as a separate integer field, since doing so and
+    ///   keeping it updated would hinder thread-parallel insertion of
+    ///   new entries.
+    ///
+    /// This is the allocation available to the user. Actual
+    /// allocation may be larger, for example, after calling
+    /// fillComplete().  Thus, this does not necessarily reflect the
+    /// graph's memory consumption.
+    ///
+    /// \return If indicesAreAllocated() is true, the allocation size.
+    ///   Otherwise,
+    ///   <tt>Tpetra::Details::OrdinalTraits<size_t>::invalid()</tt>.
+    size_t getNodeAllocationSize () const;
 
-      This quantity is computed during the actual allocation. Therefore, if <tt>indicesAreAllocated() == false</tt>,
-      this method returns <tt>OrdinalTraits<size_t>::invalid()</tt>.
-    */
-    size_t getNodeAllocationSize() const;
-
-    //! \brief Returns the current number of allocated entries for this node in the specified global row .
-    /** Throws exception std::runtime_error if the specified global row does not belong to this node. */
+    /// \brief Current number of allocated entries in the given row on
+    ///   the calling (MPI) process, using a global row index.
+    ///
+    /// \return If the given row index is in the row Map on the
+    ///   calling process, then return this process' allocation size
+    ///   for that row.  Otherwise, return
+    ///   <tt>Tpetra::Details::OrdinalTraits<size_t>::invalid()</tt>.
     size_t getNumAllocatedEntriesInGlobalRow(GlobalOrdinal globalRow) const;
 
-    //! Returns the current number of allocated entries on this node in the specified local row.
-    /** Throws exception std::runtime_error if the specified local row is not valid for this node. */
+    /// \brief Current number of allocated entries in the given row on
+    ///   the calling (MPI) process, using a local row index.
+    ///
+    /// \return If the given row index is in the row Map on the
+    ///   calling process, then return this process' allocation size
+    ///   for that row.  Otherwise, return
+    ///   <tt>Tpetra::Details::OrdinalTraits<size_t>::invalid()</tt>.
     size_t getNumAllocatedEntriesInLocalRow(LocalOrdinal localRow) const;
 
     //! \brief Returns the number of global diagonal entries, based on global row/column index comparisons.
@@ -1417,62 +1446,29 @@ namespace Tpetra {
     /// method unnecessarily.
     void makeColMap ();
 
-    void makeIndicesLocal ();
+    /// \brief Convert column indices from global to local.
+    ///
+    /// \pre The graph has a column Map.
+    /// \post The graph is locally indexed.
+    ///
+    /// \return Error code and error string.  See below.
+    ///
+    /// First return value is the number of column indices on this
+    /// process, counting duplicates, that could not be converted to
+    /// local indices, because they were not in the column Map on the
+    /// calling process.  If some error occurred before conversion
+    /// happened, then this is
+    /// <tt>Tpetra::Details::OrdinalTraits<size_t>::invalid()</tt>.
+    ///
+    /// Second return value is a human-readable error string.  If the
+    /// first return value is zero, then the string may be empty.
+    std::pair<size_t, std::string> makeIndicesLocal ();
+
     void makeImportExport ();
 
     //@}
     //! \name Methods for inserting indices or transforming values
     //@{
-
-    template<ELocalGlobal lg>
-    size_t filterIndices (const SLocalGlobalNCViews& inds) const
-    {
-      using Teuchos::ArrayView;
-      static_assert (lg == GlobalIndices || lg == LocalIndices,
-                     "Tpetra::CrsGraph::filterIndices: The template parameter "
-                     "lg must be either GlobalIndices or LocalIndicies.");
-
-      const map_type& cmap = *colMap_;
-      size_t numFiltered = 0;
-#ifdef HAVE_TPETRA_DEBUG
-      size_t numFiltered_debug = 0;
-#endif
-      if (lg == GlobalIndices) {
-        ArrayView<GlobalOrdinal> ginds = inds.ginds;
-        typename ArrayView<GlobalOrdinal>::iterator fend = ginds.begin();
-        typename ArrayView<GlobalOrdinal>::iterator cptr = ginds.begin();
-        while (cptr != ginds.end()) {
-          if (cmap.isNodeGlobalElement(*cptr)) {
-            *fend++ = *cptr;
-#ifdef HAVE_TPETRA_DEBUG
-            ++numFiltered_debug;
-#endif
-          }
-          ++cptr;
-        }
-        numFiltered = fend - ginds.begin();
-      }
-      else if (lg == LocalIndices) {
-        ArrayView<LocalOrdinal> linds = inds.linds;
-        typename ArrayView<LocalOrdinal>::iterator fend = linds.begin();
-        typename ArrayView<LocalOrdinal>::iterator cptr = linds.begin();
-        while (cptr != linds.end()) {
-          if (cmap.isNodeLocalElement(*cptr)) {
-            *fend++ = *cptr;
-#ifdef HAVE_TPETRA_DEBUG
-            ++numFiltered_debug;
-#endif
-          }
-          ++cptr;
-        }
-        numFiltered = fend - linds.begin();
-      }
-#ifdef HAVE_TPETRA_DEBUG
-      TEUCHOS_TEST_FOR_EXCEPT( numFiltered != numFiltered_debug );
-#endif
-      return numFiltered;
-    }
-
 
     template<class T>
     size_t
@@ -1577,6 +1573,8 @@ namespace Tpetra {
     ///   will store the input indices as global indices.  Otherwise,
     ///   if <tt>I == LocalIndices</tt>, this method will store the
     ///   input indices as local indices.
+    ///
+    /// \return The number of indices inserted.
     size_t
     insertIndices (const RowInfo& rowInfo,
                    const SLocalGlobalViews& newInds,
@@ -1739,21 +1737,55 @@ namespace Tpetra {
 #endif // HAVE_TPETRA_DEBUG
     }
 
-    void
-    insertGlobalIndicesImpl (const LocalOrdinal myRow,
-                             const Teuchos::ArrayView<const GlobalOrdinal> &indices);
-    void
-    insertLocalIndicesImpl (const LocalOrdinal myRow,
-                            const Teuchos::ArrayView<const LocalOrdinal> &indices);
-    //! Like insertLocalIndices(), but with column Map filtering.
-    void
-    insertLocalIndicesFiltered (const LocalOrdinal localRow,
-                                const Teuchos::ArrayView<const LocalOrdinal> &indices);
+    /// \brief Insert global indices, using an input <i>local</i> row index.
+    ///
+    /// \return The number of indices inserted.
+    size_t
+    insertGlobalIndicesImpl (const LocalOrdinal lclRow,
+                             const Teuchos::ArrayView<const GlobalOrdinal>& gblColInds);
 
-    //! Like insertGlobalIndices(), but with column Map filtering.
+    /// \brief Insert global indices, using an input RowInfo.
+    ///
+    /// \return The number of indices inserted.
+    size_t
+    insertGlobalIndicesImpl (const RowInfo& rowInfo,
+                             const Teuchos::ArrayView<const GlobalOrdinal> &indices);
+
     void
-    insertGlobalIndicesFiltered (const GlobalOrdinal localRow,
-                                 const Teuchos::ArrayView<const GlobalOrdinal> &indices);
+    insertLocalIndicesImpl (const LocalOrdinal lclRow,
+                            const Teuchos::ArrayView<const LocalOrdinal>& gblColInds);
+
+    /// \brief Like insertGlobalIndices(), but with column Map filtering.
+    ///
+    /// "Column Map filtering" means that any column indices not in
+    /// the column Map on the calling process, get silently dropped.
+    ///
+    /// \param gblRow [in] Global index of the row in which to insert.
+    ///   This row MUST be in the row Map on the calling process.
+    /// \param gblColInds [in] The global column indices to insert
+    ///   into that row.
+    /// \param numGblColInds [in] The number of global column indices
+    ///   to insert into that row.
+    void
+    insertGlobalIndicesFiltered (const GlobalOrdinal gblRow,
+                                 const GlobalOrdinal gblColInds[],
+                                 const LocalOrdinal numGblColInds);
+
+    /// \brief Implementation of insertGlobalIndices for nonowned rows.
+    ///
+    /// A global row index is <i>nonowned</i> when it is not in the
+    /// column Map on the calling process.
+    ///
+    /// \param gblRow [in] Global index of the row in which to insert.
+    ///   This row must NOT be in the row Map on the calling process.
+    /// \param gblColInds [in] The global column indices to insert
+    ///   into that row.
+    /// \param numGblColInds [in] The number of global column indices
+    ///   to insert into that row.
+    void
+    insertGlobalIndicesIntoNonownedRows (const GlobalOrdinal gblRow,
+                                         const GlobalOrdinal gblColInds[],
+                                         const LocalOrdinal numGblColInds);
 
     /// \brief Whether sumIntoLocalValues and transformLocalValues
     ///   should use atomic updates by default.
@@ -2832,9 +2864,6 @@ namespace Tpetra {
   protected:
     void fillLocalGraph (const Teuchos::RCP<Teuchos::ParameterList>& params);
 
-    //! Whether it is correct to call getRowInfo().
-    bool hasRowInfo () const;
-
     //! Throw an exception if the internal state is not consistent.
     void checkInternalState () const;
 
@@ -2864,9 +2893,6 @@ namespace Tpetra {
 
     //! Local graph; only initialized after first fillComplete() call.
     local_graph_type lclGraph_;
-
-    //! Local number of (populated) entries; must always be consistent.
-    size_t nodeNumEntries_;
 
     /// \brief Local number of (populated) diagonal entries.
     ///
