@@ -1,5 +1,4 @@
 
-
 #
 # A) Package-specific configuration options
 #
