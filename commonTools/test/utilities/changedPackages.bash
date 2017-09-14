@@ -231,7 +231,7 @@ else #If we aren't building everything, figure out which packages to bulid
 fi
 
 #Turn some things off that are currently problematic
-#PackageEnables+="-DAnasazi_ENABLE_TESTS=OFF "
+PackageEnables+="-DAnasazi_ENABLE_TESTS=OFF "
 #-DIfpack2_ENABLE_TESTS=OFF -DMueLu_ENABLE_TESTS=OFF "
 
 echo "$PackageEnables"
