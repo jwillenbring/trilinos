@@ -92,12 +92,10 @@ SET(Zlib_LIBRARY_DIRS "$ENV{SEMS_ZLIB_LIBRARY_PATH}" CACHE PATH "Set by default 
 SET(TPL_ENABLE_HDF5 ON CACHE BOOL "Set by default for PR testing")
 SET(HDF5_INCLUDE_DIRS "$ENV{SEMS_HDF5_INCLUDE_PATH}" CACHE PATH "Set by default for PR testing")
 SET(HDF5_LIBRARY_DIRS "$ENV{SEMS_HDF5_LIBRARY_PATH}" CACHE PATH "Set by default for PR testing")
-#May need to add HDF5_LIBRARY_NAMES
 
 SET(TPL_ENABLE_Netcdf ON CACHE BOOL "Set by default for PR testing")
 SET(Netcdf_INCLUDE_DIRS "$ENV{SEMS_NETCDF_INCLUDE_PATH}" CACHE PATH "Set by default for PR testing")
 SET(Netcdf_LIBRARY_DIRS "$ENV{SEMS_NETCDF_LIBRARY_PATH}" CACHE PATH "Set by default for PR testing")
-#May need to add Netcdf_LIBRARY_NAMES
 
 SET(TPL_ENABLE_SuperLU ON CACHE BOOL "Set by default for PR testing")
 SET(SuperLU_INCLUDE_DIRS "$ENV{SEMS_SUPERLU_INCLUDE_PATH}" CACHE PATH "Set by default for PR testing")
