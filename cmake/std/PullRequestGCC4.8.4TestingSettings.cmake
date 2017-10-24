@@ -69,9 +69,9 @@ SET(Trilinos_ENABLE_PyTrilinos OFF CACHE BOOL "Set by default for PR testing")
 
 # Options (still from SEMSDevEnv.cmake) specific to TPLs
 
-SET(TPL_ENABLE_yaml-cpp ON CACHE BOOL "Set by default for PR testing")
-SET(yaml-cpp_INCLUDE_DIRS "$ENV{SEMS_YAML_CPP_INCLUDE_PATH}" CACHE PATH "Set by default for PR testing")
-SET(yaml-cpp_LIBRARY_DIRS "$ENV{SEMS_YAML_CPP_LIBRARY_PATH}" CACHE PATH "Set by default for PR testing")
+#SET(TPL_ENABLE_yaml-cpp ON CACHE BOOL "Set by default for PR testing")
+#SET(yaml-cpp_INCLUDE_DIRS "$ENV{SEMS_YAML_CPP_INCLUDE_PATH}" CACHE PATH "Set by default for PR testing")
+#SET(yaml-cpp_LIBRARY_DIRS "$ENV{SEMS_YAML_CPP_LIBRARY_PATH}" CACHE PATH "Set by default for PR testing")
 
 SET(TPL_ENABLE_Boost ON CACHE BOOL "Set by default for PR testing")
 SET(Boost_INCLUDE_DIRS "$ENV{SEMS_BOOST_INCLUDE_PATH}" CACHE PATH "Set by default for PR testing")
