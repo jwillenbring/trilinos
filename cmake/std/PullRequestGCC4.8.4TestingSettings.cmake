@@ -53,3 +53,53 @@ set (Trilinos_TRACE_ADD_TEST ON CACHE BOOL "Set by default for PR testing")
 # Disable long-failing Piro test until it can be fixed (#826)
 set (Piro_EpetraSolver_MPI_4_DISABLE ON CACHE BOOL "Set by default for PR testing")
 
+# Options from SEMSDevEnv.cmake
+
+SET(CMAKE_C_COMPILER "$ENV{MPICC}" CACHE FILEPATH "Set by default for PR testing")
+
+SET(CMAKE_CXX_COMPILER "$ENV{MPICXX}" CACHE FILEPATH "Set by default for PR testing")
+
+SET(CMAKE_Fortran_COMPILER "$ENV{MPIF90}" CACHE FILEPATH "Set by default for PR testing")
+
+SET(MPI_BASE_DIR "$ENV{SEMS_OPENMPI_ROOT}" CACHE PATH "Set by default for PR testing")
+
+SET(Trilinos_EXTRA_LINK_FLAGS "-lgomp -lgfortran$ -lldl -ldl" CACHE STRING "Set by default for PR testing")
+
+SET(Trilinos_ENABLE_PyTrilinos OFF CACHE BOOL "Set by default for PR testing")
+
+# Options (still from SEMSDevEnv.cmake) specific to TPLs
+
+SET(TPL_ENABLE_yaml-cpp ON CACHE BOOL "Set by default for PR testing")
+SET(yaml-cpp_INCLUDE_DIRS "$ENV{SEMS_YAML_CPP_INCLUDE_PATH}" CACHE PATH "Set by default for PR testing")
+SET(yaml-cpp_LIBRARY_DIRS "$ENV{SEMS_YAML_CPP_LIBRARY_PATH}" CACHE PATH "Set by default for PR testing")
+
+SET(TPL_ENABLE_Boost ON CACHE BOOL "Set by default for PR testing")
+SET(Boost_INCLUDE_DIRS "$ENV{SEMS_BOOST_INCLUDE_PATH}" CACHE PATH "Set by default for PR testing")
+SET(Boost_LIBRARY_DIRS "$ENV{SEMS_BOOST_LIBRARY_PATH}" CACHE PATH "Set by default for PR testing")
+
+SET(TPL_ENABLE_BoostLib ON CACHE BOOL "Set by default for PR testing")
+SET(BoostLib_INCLUDE_DIRS "$ENV{SEMS_BOOST_INCLUDE_PATH}" CACHE PATH "Set by default for PR testing")
+SET(BoostLib_LIBRARY_DIRS "$ENV{SEMS_BOOST_LIBRARY_PATH}" CACHE PATH "Set by default for PR testing")
+
+SET(TPL_ENABLE_ParMETIS ON CACHE BOOL "Set by default for PR testing")
+SET(ParMETIS_INCLUDE_DIRS "$ENV{SEMS_PARMETIS_INCLUDE_PATH}" CACHE PATH "Set by default for PR testing")
+SET(ParMETIS_LIBRARY_DIRS "$ENV{SEMS_PARMETIS_LIBRARY_PATH}" CACHE PATH "Set by default for PR testing")
+
+SET(TPL_ENABLE_Zlib ON CACHE BOOL "Set by default for PR testing")
+SET(Zlib_INCLUDE_DIRS "$ENV{SEMS_ZLIB_INCLUDE_PATH}" CACHE PATH "Set by default for PR testing")
+SET(Zlib_LIBRARY_DIRS "$ENV{SEMS_ZLIB_LIBRARY_PATH}" CACHE PATH "Set by default for PR testing")
+
+SET(TPL_ENABLE_HDF5 ON CACHE BOOL "Set by default for PR testing")
+SET(HDF5_INCLUDE_DIRS "$ENV{SEMS_HDF5_INCLUDE_PATH}" CACHE PATH "Set by default for PR testing")
+SET(HDF5_LIBRARY_DIRS "$ENV{SEMS_HDF5_LIBRARY_PATH}" CACHE PATH "Set by default for PR testing")
+#May need to add HDF5_LIBRARY_NAMES
+
+ET(TPL_ENABLE_Netcdf ON CACHE BOOL "Set by default for PR testing")
+SET(Netcdf_INCLUDE_DIRS "$ENV{SEMS_NETCDF_INCLUDE_PATH}" CACHE PATH "Set by default for PR testing")
+SET(Netcdf_LIBRARY_DIRS "$ENV{SEMS_NETCDF_LIBRARY_PATH}" CACHE PATH "Set by default for PR testing")
+#May need to add Netcdf_LIBRARY_NAMES
+
+SET(TPL_ENABLE_SuperLU ON CACHE BOOL "Set by default for PR testing")
+SET(SuperLU_INCLUDE_DIRS "$ENV{SEMS_SUPERLU_INCLUDE_PATH}" CACHE PATH "Set by default for PR testing")
+SET(SuperLU_LIBRARY_DIRS "$ENV{SEMS_SUPERLU_LIBRARY_PATH}" CACHE PATH "Set by default for PR testing")
+
