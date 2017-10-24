@@ -1,10 +1,10 @@
 #This file contains the options needed to both run the pull request testing
-#for Trilinos for the GCC 4.8.4 build, and to reproduce the errors reported
-#by that pull request testing build. Prior to using this this file, the
+#for Trilinos for the Linux GCC pull request testing builds, and to reproduce
+# the errors reported by those builds. Prior to using this this file, the
 #appropriate set of SEMS modules must be loaded and accessible through the
-#SEMS NFS mount.
+#SEMS NFS mount. (See the sems/PullRequestGCC*TestingEnv.sh files.)
 
-# Usage: cmake -C PullRequestGCC4.8.4TestingSettings.cmake 
+# Usage: cmake -C PullRequestLinuxGCCTestingSettings.cmake 
 
 # Misc options typically added by CI testing mode in TriBITS
 
