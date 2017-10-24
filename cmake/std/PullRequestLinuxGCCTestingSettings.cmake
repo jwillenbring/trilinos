@@ -63,7 +63,7 @@ SET(CMAKE_Fortran_COMPILER "$ENV{MPIF90}" CACHE FILEPATH "Set by default for PR 
 
 SET(MPI_BASE_DIR "$ENV{SEMS_OPENMPI_ROOT}" CACHE PATH "Set by default for PR testing")
 
-SET(Trilinos_EXTRA_LINK_FLAGS "-lgomp -lgfortran -lldl -ldl" CACHE STRING "Set by default for PR testing")
+#SET(Trilinos_EXTRA_LINK_FLAGS "-lgomp -lgfortran -lldl -ldl" CACHE STRING "Set by default for PR testing")
 
 SET(Trilinos_ENABLE_PyTrilinos OFF CACHE BOOL "Set by default for PR testing")
 
