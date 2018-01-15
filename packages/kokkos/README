@@ -1,3 +1,4 @@
+
 Kokkos implements a programming model in C++ for writing performance portable
 applications targeting all major HPC platforms. For that purpose it provides
 abstractions for both parallel execution of code and data management.
@@ -193,3 +194,4 @@ doi = "https://doi.org/10.1016/j.jpdc.2014.07.003",
 url = "http://www.sciencedirect.com/science/article/pii/S0743731514001257",
 author = "H. Carter Edwards and Christian R. Trott and Daniel Sunderland"
 }
+
