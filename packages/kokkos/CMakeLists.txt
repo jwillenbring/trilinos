@@ -5,6 +5,7 @@ ELSE()
   SET(KOKKOS_HAS_TRILINOS OFF CACHE BOOL "")
 ENDIF()
 
+
 IF(NOT KOKKOS_HAS_TRILINOS)
   cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
   project(Kokkos CXX)
