@@ -23,7 +23,6 @@ set (Trilinos_ENABLE_ALL_FORWARD_DEP_PACKAGES ON CACHE BOOL "Set by default for 
 set (Trilinos_CTEST_USE_NEW_AAO_FEATURES ON CACHE BOOL "Set by default for PR testing")
 
 
-
 # Options from cmake/std/MpiReleaseDebugSharedPtSettings.cmake
 
 set (TPL_ENABLE_MPI ON CACHE BOOL "Set by default for PR testing")
