@@ -1,4 +1,3 @@
-
 # We need to inject the Trilinos/cmake directory to find
 # TrilinosCreateClientTemplateHeaders.cmake
 SET(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH} "${Trilinos_SOURCE_DIR}/cmake")
