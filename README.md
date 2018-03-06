@@ -14,7 +14,6 @@ technologies within an object-oriented software framework for the solution of
 large-scale, complex multi-physics engineering and scientific problems. A
 unique design feature of Trilinos is its focus on packages.
 
-
 ### Documentation
 
 - [Getting Started with Trilinos](https://trilinos.org/getting-started/) 

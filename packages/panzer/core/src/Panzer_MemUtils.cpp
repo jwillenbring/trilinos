@@ -55,7 +55,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <Panzer_MemUtils.hpp>
-#include <Teuchos_CommHelpers.hpp>
+//#include <Teuchos_CommHelpers.hpp>
 
 #if       defined(_WIN32)
 #  include <windows.h>
