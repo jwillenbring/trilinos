@@ -1,4 +1,3 @@
-
 #
 # A) Define the package
 #
