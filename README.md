@@ -1,4 +1,3 @@
-![Trilinos](http://trilinos.sandia.gov/common/logo_trilinos_moon.png)
 
 [Website](http://trilinos.org/) |
 [Documentation](http://trilinos.org/about/documentation/) |
