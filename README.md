@@ -1,4 +1,3 @@
-
 [Website](http://trilinos.org/) |
 [Documentation](http://trilinos.org/about/documentation/) |
 [Mailing List](https://trilinos.org/mailman/listinfo/trilinos-users) |
