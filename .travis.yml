@@ -4,4 +4,4 @@ before_script:
   - git clone https://github.com/duongdoOrg/Trilinos
   
 script:
-  - ./do-configure -DTrilinos_ENABLE_<TRIBITS_PACKAGE>=ON
+  - ./do-configure -DTrilinos_ENABLE_ALL_PACKAGES=ON
