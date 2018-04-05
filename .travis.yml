@@ -8,4 +8,3 @@ before_script:
   
 script:
   - ./do-configure -DTrilinos_ENABLE_TEUCHOS=ON
-  - ./do-configure -DTrilinos_ENABLE_ALL_PACKAGES=ON
