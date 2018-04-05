@@ -8,3 +8,5 @@ before_script:
   
 script:
   - ./do-configure -DTrilinos_ENABLE_Teuchos=ON
+  - ./do-configure2 -DTrilinos_ENABLE_Teuchos=ON
+  - ccmake $SOURCE_BASE
