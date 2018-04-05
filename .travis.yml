@@ -7,4 +7,4 @@ before_script:
   - git clone https://github.com/duongdoOrg/Trilinos
   
 script:
-  - ./do-configure -DTrilinos_ENABLE_TEUCHOS=ON
+  - ./do-configure -DTrilinos_ENABLE_Teuchos=ON
