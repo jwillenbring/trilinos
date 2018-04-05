@@ -1,0 +1,7 @@
+EXTRA_ARGS=$@
+
+cmake \
+  -D Trilinos_CONFIGURE_OPTIONS_FILE:FILEPATH=MyConfigureOptions.cmake \
+  -D Trilinos_ENABLE_TESTS=ON \
+  $EXTRA_ARGS \
+  ${SOURCE_BASE}
