@@ -2,12 +2,9 @@ language: cpp
 
 before_install:
   - chmod +x do-configure
-  - chmod +x do-configure2
 
 before_script:
   - git clone https://github.com/duongdoOrg/Trilinos
   
 script:
   - ./do-configure -DTrilinos_ENABLE_Teuchos=ON
-  - ./do-configure2 -DTrilinos_ENABLE_Teuchos=ON
-  - ccmake $SOURCE_BASE
