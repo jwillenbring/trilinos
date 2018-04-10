@@ -1,14 +1,10 @@
 language: cpp
 
-before_install:
-  - chmod +x ../Trilinos/do-configure
-
 before_script:
-  - git clone https://github.com/duongdoOrg/Trilinos
-  - pwd
+  - git clone https://github.com/duongdoOrg/Trilinos Trilinos
+  - chmod +x Trilinos/do-configure
   - mkdir BUILD
   - cd BUILD
-  - pwd
   
 script:
   - ../Trilinos/./do-configure -DTrilinos_ENABLE_Teuchos=ON
