@@ -4,6 +4,5 @@ cmake \
   -D CMAKE_BUILD_TYPE=DEBUG \
   -D Trilinos_ENABLE_TESTS=ON \
   -D Trilinos_ENABLE_Fortran=OFF \
-  -DTPL_ENABLE_BLAS=OFF \
   $EXTRA_ARGS \
   ../Trilinos
