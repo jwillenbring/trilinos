@@ -9,3 +9,4 @@ before_script:
 script:
   - ../Trilinos/./do-configure -DTrilinos_ENABLE_TeuchosCore=ON
   - make -j 2
+  - ctest -j 2
