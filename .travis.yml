@@ -1,12 +1,25 @@
 language: cpp
 
+env:
+  global:
+    # Ubuntu version
+    - LINUX_DIST=trusty
+    # Misc
+    - RUN_TESTS=true
+
+git:
+  depth: 3
+
+before_install:
+  - sudo apt-get install -qq libblas-dev 
+ 
 before_script:
-  - git clone --depth 1 https://github.com/duongdoOrg/Trilinos Trilinos
+  - git clone https://github.com/duongdoOrg/Trilinos Trilinos
   - chmod +x Trilinos/do-configure
   - mkdir BUILD
   - cd BUILD
   
 script:
-  - ../Trilinos/./do-configure -DTrilinos_ENABLE_TeuchosCore=ON
+  - ../Trilinos/./do-configure -DTrilinos_ENABLE_Teuchos=ON
   - make -j 2
   - ctest -j 2
