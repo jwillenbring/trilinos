@@ -5,6 +5,8 @@ before_install:
 
 before_script:
   - git clone https://github.com/duongdoOrg/Trilinos
+  - mkdir BUILD
+  - cd BUILD
   
 script:
   - ./do-configure -DTrilinos_ENABLE_Teuchos=ON
