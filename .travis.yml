@@ -1,7 +1,7 @@
 language: cpp
 
 before_script:
-  - git clone https://github.com/duongdoOrg/Trilinos Trilinos
+  - git clone --depth 1 https://github.com/duongdoOrg/Trilinos Trilinos
   - chmod +x Trilinos/do-configure
   - mkdir BUILD
   - cd BUILD
