@@ -4,4 +4,4 @@ cmake \
   -D CMAKE_BUILD_TYPE=DEBUG \
   -D Trilinos_ENABLE_TESTS=ON \
   $EXTRA_ARGS \
-  ${SOURCE_BASE}
+  ../Trilinos
