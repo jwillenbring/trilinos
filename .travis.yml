@@ -7,4 +7,4 @@ before_script:
   - cd BUILD
   
 script:
-  - ../Trilinos/./do-configure -DTrilinos_ENABLE_Teuchos=ON
+  - ../Trilinos/./do-configure -DTrilinos_ENABLE_TeuchosCore=ON
