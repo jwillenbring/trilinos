@@ -18,6 +18,6 @@ before_script:
   - cd BUILD
   
 script:
-  - ../Trilinos/./do-configure -DTrilinos_ENABLE_Teuchos=ON -DTrilinos_ENABLE_Tpetra=ON
+  - ../Trilinos/./do-configure -DTrilinos_ENABLE_Teuchos=ON -DTrilinos_ENABLE_Tpetra=ON -DTrilinos_ENABLE_MueLu=ON
   - make -j 2
   - ctest -j 2
