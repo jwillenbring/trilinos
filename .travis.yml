@@ -4,14 +4,12 @@ env:
   global:
     # Ubuntu version
     - LINUX_DIST=trusty
-    # Misc
-    - RUN_TESTS=true
 
 git:
   depth: 3
 
 before_install:
-  - sudo apt-get install -qq libblas-dev 
+  - sudo apt-get install -qq libblas-dev liblapack-dev
  
 before_script:
   - git clone https://github.com/duongdoOrg/Trilinos Trilinos
