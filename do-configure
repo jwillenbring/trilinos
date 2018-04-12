@@ -3,5 +3,6 @@ EXTRA_ARGS=$@
 cmake \
   -D CMAKE_BUILD_TYPE=DEBUG \
   -D Trilinos_ENABLE_TESTS=ON \
+  -DTPL_ENABLE_MPI=ON \
   $EXTRA_ARGS \
   ../Trilinos
