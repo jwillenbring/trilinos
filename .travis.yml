@@ -1,0 +1,23 @@
+language: cpp
+
+env:
+  global:
+    # Ubuntu version
+    - LINUX_DIST=trusty
+
+git:
+  depth: 3
+
+before_install:
+  - sudo apt-get install -qq libblas-dev liblapack-dev gfortran mpich ninja-build
+ 
+before_script:
+  - git clone https://github.com/duongdoOrg/Trilinos Trilinos
+  - chmod +x Trilinos/do-configure
+  - mkdir BUILD
+  - cd BUILD
+  
+script:
+  - ../Trilinos/./do-configure -DTrilinos_ENABLE_Teuchos=ON -DTrilinos_ENABLE_MueLu=ON
+  - make NP=2
+  - ctest -j 2
