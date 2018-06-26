@@ -46,9 +46,9 @@ rem Clone or update Trilinos
     cd %TRILINOS_DIR%
     %GIT_EXE% pull
   ) else (
-    %GIT_EXE% clone git@github.com:trilinos/Trilinos.git %TRILINOS_DIR%
+    %GIT_EXE% clone git@github.com:jwillenbring/Trilinos.git %TRILINOS_DIR%
     cd %TRILINOS_DIR%
-    %GIT_EXE% checkout develop
+    %GIT_EXE% checkout test_windows
   )
 
 )
