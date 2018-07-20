@@ -110,13 +110,13 @@ Ptr<T> dynamicPtrCast( const Ptr<U>& r ) noexcept {
 template<class T>
 inline
 const T* getRawPtr( const Ptr<const T>& x ) {
-  return x.ptr();
+  return x.get();
 }
 
 template<class T>
 inline
 T* getRawPtr( const Ptr<T>& x ) {
-  return x.ptr();
+  return x.get();
 }
 
 template<class T>
@@ -128,7 +128,19 @@ int getCount( const Ptr<T>& x ) {
 template<class T>
 inline
 bool is_nullPtr( const Ptr<T>& x ) {
-  return x == nullPtr;
+  return x.is_null();
+}
+
+template<typename T>
+inline 
+Ptr<T> toPtr( const Ptr<T>& ptr ) { 
+  return ptr;
+}
+
+template<typename T>
+inline 
+Ptr<const T> toPtr( const Ptr<const T>& ptr ) { 
+  return ptr;
 }
 
 template<class T>

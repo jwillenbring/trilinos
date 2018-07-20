@@ -131,7 +131,9 @@ namespace MueLu {
     if (parameterList_.get<bool>("refmaxwell: cuda profile setup", false)) cudaProfilerStart();
 #endif
 
-    RCP<Teuchos::TimeMonitor> tmCompute = rcp(new Teuchos::TimeMonitor(*Teuchos::TimeMonitor::getNewTimer("MueLu RefMaxwell: compute")));
+    Teuchos::TimeMonitor tmCompute(*Teuchos::TimeMonitor::getNewTimer("MueLu RefMaxwell: compute"));
+
+    bool defaultFilter = false;
 
     // Remove zero entries from D0 if necessary.
     // In the construction of the prolongator we use the graph of the
@@ -142,10 +144,48 @@ namespace MueLu {
       fineLevel.SetLevelID(0);
       fineLevel.Set("A",D0_Matrix_);
       fineLevel.setlib(D0_Matrix_->getDomainMap()->lib());
-      RCP<ThresholdAFilterFactory> ThreshFact = rcp(new ThresholdAFilterFactory("A",1e-8,/*keepDiagonal=*/false));
+      // We expect D0 to have entries +-1, so any threshold value will do.
+      RCP<ThresholdAFilterFactory> ThreshFact = rcp(new ThresholdAFilterFactory("A",1.0e-8,/*keepDiagonal=*/false));
       fineLevel.Request("A",ThreshFact.get());
       ThreshFact->Build(fineLevel);
       D0_Matrix_ = fineLevel.Get< RCP<Matrix> >("A",ThreshFact.get());
+
+      // If D0 has too many zeros, maybe SM and M1 do as well.
+      defaultFilter = true;
+    }
+
+    if (parameterList_.get<bool>("refmaxwell: filter SM", defaultFilter)) {
+      RCP<Vector> diag = VectorFactory::Build(SM_Matrix_->getRowMap());
+      // find a reasonable absolute value threshold
+      SM_Matrix_->getLocalDiagCopy(*diag);
+      magnitudeType threshold = 1.0e-8 * diag->normInf();
+
+      Level fineLevel;
+      fineLevel.SetFactoryManager(Teuchos::null);
+      fineLevel.SetLevelID(0);
+      fineLevel.Set("A",SM_Matrix_);
+      fineLevel.setlib(SM_Matrix_->getDomainMap()->lib());
+      RCP<ThresholdAFilterFactory> ThreshFact = rcp(new ThresholdAFilterFactory("A",threshold,/*keepDiagonal=*/true));
+      fineLevel.Request("A",ThreshFact.get());
+      ThreshFact->Build(fineLevel);
+      SM_Matrix_ = fineLevel.Get< RCP<Matrix> >("A",ThreshFact.get());
+    }
+
+    if (parameterList_.get<bool>("refmaxwell: filter M1", defaultFilter)) {
+      RCP<Vector> diag = VectorFactory::Build(M1_Matrix_->getRowMap());
+      // find a reasonable absolute value threshold
+      M1_Matrix_->getLocalDiagCopy(*diag);
+      magnitudeType threshold = 1.0e-8 * diag->normInf();
+
+      Level fineLevel;
+      fineLevel.SetFactoryManager(Teuchos::null);
+      fineLevel.SetLevelID(0);
+      fineLevel.Set("A",M1_Matrix_);
+      fineLevel.setlib(M1_Matrix_->getDomainMap()->lib());
+      RCP<ThresholdAFilterFactory> ThreshFact = rcp(new ThresholdAFilterFactory("A",threshold,/*keepDiagonal=*/true));
+      fineLevel.Request("A",ThreshFact.get());
+      ThreshFact->Build(fineLevel);
+      M1_Matrix_ = fineLevel.Get< RCP<Matrix> >("A",ThreshFact.get());
     }
 
     // clean rows associated with boundary conditions
@@ -166,10 +206,12 @@ namespace MueLu {
     }
     else if(Nullspace_ == Teuchos::null && Coords_ != Teuchos::null) {
       // normalize coordinates
-      Teuchos::Array<magnitudeType> norms(Coords_->getNumVectors());
+      typedef typename RealValuedMultiVector::scalar_type realScalarType;
+      typedef typename Teuchos::ScalarTraits<realScalarType>::magnitudeType realMagnitudeType;
+      Teuchos::Array<realMagnitudeType> norms(Coords_->getNumVectors());
       Coords_->norm2(norms);
       for (size_t i=0;i<Coords_->getNumVectors();i++)
-        norms[i] = ((magnitudeType)1.0)/norms[i];
+        norms[i] = ((realMagnitudeType)1.0)/norms[i];
       Coords_->scale(norms());
       Nullspace_ = MultiVectorFactory::Build(SM_Matrix_->getRowMap(),Coords_->getNumVectors());
 
@@ -276,7 +318,7 @@ namespace MueLu {
       GetOStream(Runtime0) << "RefMaxwell::compute(): building MG for (2,2)-block" << std::endl;
 
       { // build fine grid operator for (2,2)-block, D0* SM D0  (aka TMT)
-        RCP<Teuchos::TimeMonitor> tm = rcp(new Teuchos::TimeMonitor(*Teuchos::TimeMonitor::getNewTimer("MueLu RefMaxwell: Build A22")));
+        Teuchos::TimeMonitor tm(*Teuchos::TimeMonitor::getNewTimer("MueLu RefMaxwell: Build A22"));
 
         Level fineLevel, coarseLevel;
         fineLevel.SetFactoryManager(Teuchos::null);
@@ -400,6 +442,8 @@ namespace MueLu {
     if (parameterList_.get<bool>("refmaxwell: cuda profile setup", false)) cudaProfilerStop();
 #endif
 
+    describe(GetOStream(Runtime0));
+
     if (dump_matrices_) {
       GetOStream(Runtime0) << "RefMaxwell::compute(): dumping data" << std::endl;
       Xpetra::IO<SC, LO, GlobalOrdinal, Node>::Write(std::string("SM.mat"), *SM_Matrix_);
@@ -410,6 +454,18 @@ namespace MueLu {
       std::copy(BCrows_.begin(), BCrows_.end(), std::ostream_iterator<LO>(outBCrows, "\n"));
       std::ofstream outBCcols("BCcols.mat");
       std::copy(BCcols_.begin(), BCcols_.end(), std::ostream_iterator<LO>(outBCcols, "\n"));
+#else
+      std::ofstream outBCrows("BCrows.mat");
+      auto BCrows = Kokkos::create_mirror_view (BCrows_);
+      Kokkos::deep_copy(BCrows , BCrows_);
+      for (size_t i = 0; i < BCrows.size(); i++)
+        outBCrows << BCrows[i] << "\n";
+
+      std::ofstream outBCcols("BCcols.mat");
+      auto BCcols = Kokkos::create_mirror_view (BCcols_);
+      Kokkos::deep_copy(BCcols , BCcols_);
+      for (size_t i = 0; i < BCcols.size(); i++)
+        outBCcols << BCcols[i] << "\n";
 #endif
       Xpetra::IO<SC, LO, GlobalOrdinal, Node>::Write(std::string("nullspace.mat"), *Nullspace_);
       if (Coords_ != Teuchos::null)
@@ -606,7 +662,7 @@ namespace MueLu {
                                      for (m = P11rowptr(i); m < P11rowptr(i+1); m++)
                                        if (P11colind(m) == jNew)
                                          break;
-#ifdef HAVE_MUELU_DEBUG
+#if defined(HAVE_MUELU_DEBUG) && !defined(HAVE_MUELU_CUDA)
                                      TEUCHOS_ASSERT_EQUALITY(P11colind(m),jNew);
 #endif
                                      P11vals(m) += 0.5 * v * n;
@@ -630,7 +686,7 @@ namespace MueLu {
                                      for (m = P11rowptr(i); m < P11rowptr(i+1); m++)
                                        if (P11colind(m) == jNew)
                                          break;
-#ifdef HAVE_MUELU_DEBUG
+#if defined(HAVE_MUELU_DEBUG) && !defined(HAVE_MUELU_CUDA)
                                      TEUCHOS_ASSERT_EQUALITY(P11colind(m),jNew);
 #endif
                                      P11vals(m) += 0.5 * v * n;
@@ -901,7 +957,7 @@ namespace MueLu {
 
   template<class Scalar, class LocalOrdinal, class GlobalOrdinal, class Node>
   void RefMaxwell<Scalar,LocalOrdinal,GlobalOrdinal,Node>::formCoarseMatrix() {
-    RCP<Teuchos::TimeMonitor> tm = rcp(new Teuchos::TimeMonitor(*Teuchos::TimeMonitor::getNewTimer("MueLu RefMaxwell: Build coarse (1,1) matrix")));
+    Teuchos::TimeMonitor tm(*Teuchos::TimeMonitor::getNewTimer("MueLu RefMaxwell: Build coarse (1,1) matrix"));
     
     // coarse matrix for P11* (M1 + D1* M2 D1) P11
     Teuchos::RCP<Matrix> Matrix1 = MatrixFactory::Build(P11_->getDomainMap(),0);
@@ -921,7 +977,7 @@ namespace MueLu {
       AH_=Matrix1;
     }
     else {
-      tm = rcp(new Teuchos::TimeMonitor(*Teuchos::TimeMonitor::getNewTimer("MueLu RefMaxwell: Build coarse addon matrix")));
+      Teuchos::TimeMonitor tmAddon(*Teuchos::TimeMonitor::getNewTimer("MueLu RefMaxwell: Build coarse addon matrix"));
       // catch a failure
       TEUCHOS_TEST_FOR_EXCEPTION(M0inv_Matrix_==Teuchos::null,std::invalid_argument,
                                  "MueLu::RefMaxwell::formCoarseMatrix(): Inverse of "
@@ -1090,6 +1146,8 @@ namespace MueLu {
                                                                   Scalar alpha,
                                                                   Scalar beta) const {
 
+    Teuchos::TimeMonitor tm(*Teuchos::TimeMonitor::getNewTimer("MueLuRefmaxwell: Solve"));
+
     // make sure that we have enough temporary memory
     if (X.getNumVectors() != P11res_->getNumVectors()) {
       P11res_    = MultiVectorFactory::Build(P11_->getDomainMap(),X.getNumVectors());
@@ -1173,6 +1231,37 @@ namespace MueLu {
     M1_Matrix_ = M1_Matrix;
     Coords_ = Coords;
     Nullspace_ = Nullspace;
+  }
+
+  template <class Scalar, class LocalOrdinal, class GlobalOrdinal, class Node>
+  void RefMaxwell<Scalar,LocalOrdinal,GlobalOrdinal,Node>::
+  describe(Teuchos::FancyOStream& out, const Teuchos::EVerbosityLevel verbLevel) const {
+    out << "\n--------------------------------------------------------------------------------\n" <<
+      "---                            RefMaxwell Summary                           ---\n"
+      "--------------------------------------------------------------------------------" << std::endl;
+    out << std::endl;
+
+    GlobalOrdinal numRows;
+    GlobalOrdinal nnz;
+
+    numRows = SM_Matrix_->getGlobalNumRows();
+    nnz = SM_Matrix_->getGlobalNumEntries();
+
+    Xpetra::global_size_t tt = numRows;
+    int rowspacer = 3; while (tt != 0) { tt /= 10; rowspacer++; }
+    tt = nnz;
+    int nnzspacer = 2; while (tt != 0) { tt /= 10; nnzspacer++; }
+
+    out  << "block " << std::setw(rowspacer) << " rows " << std::setw(nnzspacer) << " nnz " << " nnz/row" << std::endl;
+    out << "(1, 1)" << std::setw(rowspacer) << numRows << std::setw(nnzspacer) << nnz << std::setw(9) << as<double>(nnz) / numRows << std::endl;
+
+    numRows = A22_->getGlobalNumRows();
+    nnz = A22_->getGlobalNumEntries();
+
+    out << "(2, 2)" << std::setw(rowspacer) << numRows << std::setw(nnzspacer) << nnz << std::setw(9) << as<double>(nnz) / numRows << std::endl;
+
+    out << std::endl;
+
   }
 
 } // namespace

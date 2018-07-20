@@ -49,13 +49,14 @@
 #include <functional>
 
 #include "ROL_DynamicObjective.hpp"
+#include "ROL_FunctionBindings.hpp"
 
 
 namespace ROL {
 namespace details {
 
 using namespace std;
-using namespace std::placeholders;
+namespace ph = std::placeholders;
 
 template<typename Real>
 class DynamicObjective_CheckInterface {
@@ -70,89 +71,134 @@ private:
 
 public:
 
-  DynamicObjective_CheckInterface( Obj& obj ) : obj_(obj) {}
-
-  f_update_t<Real> update_uo() {
-    return bind( &Obj::update_uo, &obj_, _1 );
+  DynamicObjective_CheckInterface( Obj& obj ) : obj_(obj) {
+    ts_.t.resize(2);
+    ts_.t.at(0) = 0.0;
+    ts_.t.at(1) = 1.0;
+    ts_.k = 0;    
   }
 
-  f_update_t<Real> update_un() {
-    return bind( &Obj::update_un, &obj_, _1 );
+  DynamicObjective_CheckInterface( Obj& obj, TimeStamp<Real>& ts ) : 
+    obj_(obj), ts_(ts) { }
+
+
+  f_update_t<Real> update_uo( const V& un, const V& z ) {
+    return bind( &Obj::update, &obj_, ph::_1, cref(un), cref(z), ts_ );
   }
 
-  f_update_t<Real> update_z() {
-    return bind( &Obj::update_z, &obj_, _1 );
+  f_update_t<Real> update_un( const V& uo, const V& z ) {
+    return bind( &Obj::update, &obj_, cref(uo), ph::_1, cref(z), ts_ );
+  }
+
+  f_update_t<Real> update_z( const V& uo, const V& un ) {
+    return bind( &Obj::update, &obj_, cref(uo), cref(un), ph::_1, ts_ );
   }
 
   //----------------------------------------------------------------------------
 
-  f_vector_t<Real> value_uo( const V& un, const V& z ) {
-    return bind( &Obj::value, &obj_, _1, _2, cref(un), cref(z), ts_ );
+  f_scalar_t<Real> value_uo( const V& un, const V& z ) {
+    return bind( &Obj::value, &obj_, ph::_1, cref(un), cref(z), ts_ );
   }
 
-  f_vector_t<Real> value_un( const V& uo, const V& z ) {
-    return bind( &Obj::value, &obj_, _1, cref(uo), _2, cref(z), ts_ );
+  f_scalar_t<Real> value_un( const V& uo, const V& z ) {
+    return bind( &Obj::value, &obj_, cref(uo), ph::_1, cref(z), ts_ );
   }
 
-  f_vector_t<Real> value_z( const V& uo, const V& un ) {
-    return bind( &Obj::value, &obj_, _1, cref(uo), cref(un), _2, ts_ );
+  f_scalar_t<Real> value_z( const V& uo, const V& un ) {
+    return bind( &Obj::value, &obj_, cref(uo), cref(un), ph::_1, ts_ );
   }
 
   //----------------------------------------------------------------------------
 
   f_vector_t<Real> gradient_uo( const V& un, const V& z ) {
-    return bind( &Obj::gradient_uo, &obj_, _1, _2, cref(un), cref(z), ts_ );
+    return bind( &Obj::gradient_uo, &obj_, ph::_1, ph::_2, cref(un), cref(z), ts_ );
   }
 
   f_vector_t<Real> gradient_un( const V& uo, const V& z ) {
-    return bind( &Obj::gradient_un, &obj_, _1, cref(uo), _2, cref(z), ts_ );
+    return bind( &Obj::gradient_un, &obj_, ph::_1, cref(uo), ph::_2, cref(z), ts_ );
   }
   
-  f_vector_t<Real> gradient_uo( const V& un, const V& z ) {
-    return bind( &Obj::gradient_z, &obj_, _1, cref(uo), cref(un), _2, ts_ );
+  f_vector_t<Real> gradient_z( const V& uo, const V& un ) {
+    return bind( &Obj::gradient_z, &obj_, ph::_1, cref(uo), cref(un), ph::_2, ts_ );
   }
 
+  // For hessian checks
+  f_vector_t<Real> gradient_uo_uo( const V& un, const V& z ) {
+    return bind( &Obj::gradient_uo, &obj_, ph::_1, ph::_2, cref(un), cref(z), ts_ );
+  }
+
+  f_vector_t<Real> gradient_uo_un( const V& uo, const V& z ) {
+    return bind( &Obj::gradient_uo, &obj_, ph::_1, cref(uo), ph::_2, cref(z), ts_ );
+  }
+
+  f_vector_t<Real> gradient_uo_z( const V& uo, const V& un ) {
+    return bind( &Obj::gradient_uo, &obj_, ph::_1, cref(uo), cref(un), ph::_2, ts_ );
+  }
+
+  f_vector_t<Real> gradient_un_uo( const V& un, const V& z ) {
+    return bind( &Obj::gradient_un, &obj_, ph::_1, ph::_2, cref(un), cref(z), ts_ );
+  }
+
+  f_vector_t<Real> gradient_un_un( const V& uo, const V& z ) {
+    return bind( &Obj::gradient_un, &obj_, ph::_1, cref(uo), ph::_2, cref(z), ts_ );
+  }
+
+  f_vector_t<Real> gradient_un_z( const V& uo, const V& un ) {
+    return bind( &Obj::gradient_un, &obj_, ph::_1, cref(uo), cref(un), ph::_2, ts_ );
+  }
+
+  f_vector_t<Real> gradient_z_uo( const V& un, const V& z ) {
+    return bind( &Obj::gradient_z, &obj_, ph::_1, ph::_2, cref(un), cref(z), ts_ );
+  }
+
+  f_vector_t<Real> gradient_z_un( const V& uo, const V& z ) {
+    return bind( &Obj::gradient_z, &obj_, ph::_1, cref(uo), ph::_2, cref(z), ts_ );
+  }
+
+  f_vector_t<Real> gradient_z_z( const V& uo, const V& un ) {
+    return bind( &Obj::gradient_z, &obj_, ph::_1, cref(uo), cref(un), ph::_2, ts_ );
+  }
 
   //----------------------------------------------------------------------------
 
   f_dderiv_t<Real> hessVec_uo_uo( const V& un, const V& z ) {
-    return bind( &Obj::hessVec_uo_uo, &obj_, _1, _2, _3, cref(un), cref(z), ts_ );
+    return bind( &Obj::hessVec_uo_uo, &obj_, ph::_1, ph::_2, ph::_3, cref(un), cref(z), ts_ );
   }
 
   f_dderiv_t<Real> hessVec_uo_un( const V& uo, const V& z ) {
-    return bind( &Obj::hessVec_uo_un, &obj_, _1, _2, cref(uo), _3, cref(z), ts_ );
+    return bind( &Obj::hessVec_uo_un, &obj_, ph::_1, ph::_2, cref(uo), ph::_3, cref(z), ts_ );
   }
 
   f_dderiv_t<Real> hessVec_uo_z( const V& uo, const V& un ) {
-    return bind( &Obj::hessVec_uo_z, &obj_, _1, _2, cref(uo), cref(un), _3 ts_ );
+    return bind( &Obj::hessVec_uo_z, &obj_, ph::_1, ph::_2, cref(uo), cref(un), ph::_3, ts_ );
   }
 
   //----------------------------------------------------------------------------
 
   f_dderiv_t<Real> hessVec_un_uo( const V& un, const V& z ) {
-    return bind( &Obj::hessVec_un_uo, &obj_, _1, _2, _3, cref(un), cref(z), ts_ );
+    return bind( &Obj::hessVec_un_uo, &obj_, ph::_1, ph::_2, ph::_3, cref(un), cref(z), ts_ );
   }
 
   f_dderiv_t<Real> hessVec_un_un( const V& uo, const V& z ) {
-    return bind( &Obj::hessVec_un_un, &obj_, _1, _2, cref(uo), _3, cref(z), ts_ );
+    return bind( &Obj::hessVec_un_un, &obj_, ph::_1, ph::_2, cref(uo), ph::_3, cref(z), ts_ );
   }
 
   f_dderiv_t<Real> hessVec_un_z( const V& uo, const V& un ) {
-    return bind( &Obj::hessVec_un_z, &obj_, _1, _2, cref(uo), cref(un), _3 ts_ );
+    return bind( &Obj::hessVec_un_z, &obj_, ph::_1, ph::_2, cref(uo), cref(un), ph::_3, ts_ );
   }
 
   //----------------------------------------------------------------------------
 
-  f_dderiv_t<Real> hessVec_z_uo( const V& un, const V&  ) {
-    return bind( &Obj::hessVec_z_uo, &obj_, _1, _2, _3, cref(un), cref(z), ts_ );
+  f_dderiv_t<Real> hessVec_z_uo( const V& un, const V& z  ) {
+    return bind( &Obj::hessVec_z_uo, &obj_, ph::_1, ph::_2, ph::_3, cref(un), cref(z), ts_ );
   }
 
   f_dderiv_t<Real> hessVec_z_un( const V& uo, const V& z ) {
-    return bind( &Obj::hessVec_z_un, &obj_, _1, _2, cref(uo), _3, cref(z), ts_ );
+    return bind( &Obj::hessVec_z_un, &obj_, ph::_1, ph::_2, cref(uo), ph::_3, cref(z), ts_ );
   }
 
   f_dderiv_t<Real> hessVec_z_z( const V& uo, const V& un ) {
-    return bind( &Obj::hessVec_z_z, &obj_, _1, _2, cref(uo), cref(un), _3 ts_ );
+    return bind( &Obj::hessVec_z_z, &obj_, ph::_1, ph::_2, cref(uo), cref(un), ph::_3, ts_ );
   }
 
 
@@ -164,8 +210,8 @@ public:
 using details::DynamicObjective_CheckInterface;
 
 template<typename Real>
-DynamicConstraint_CheckInterface<Real> make_check( DynamicObjective<Real>& obj ) {
-  return DynamicConstraint_CheckInterface<Real>( obj );
+DynamicObjective_CheckInterface<Real> make_check( DynamicObjective<Real>& obj ) {
+  return DynamicObjective_CheckInterface<Real>( obj );
 }
 
 
