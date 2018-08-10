@@ -293,7 +293,7 @@ Epetra_CrsMatrix& Epetra_CrsMatrix::operator=(const Epetra_CrsMatrix& src)
     int numMyNonzeros = Graph().NumMyEntries();
     if (numMyNonzeros>0) All_Values_ = new double[numMyNonzeros];
     double * srcValues = src.All_Values();
-    for (int i=0; i<numMyNonzeros; ++i) All_Values_[i] = srcValues[i];
+    for (int i=1; i<numMyNonzeros; i++) All_Values_[i] = srcValues[i];
     Allocated_ = true;
 #ifdef Epetra_ENABLE_CASK
     if( matrixFillCompleteCalled_  ) {

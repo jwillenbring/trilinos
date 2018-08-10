@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
   if (verbose1)
     std::cout << "Solver performed " << solver.NumIters() << " iterations." << std::endl
 	 << "Norm of recursive residual = " << solver.RecursiveResidual() << std::endl << std::endl;
-  assert(solver.NumIters()==NumGlobalElements+rnst.GetMaxNumExtraIterations());
+  assert(solver.NumIters()+2==NumGlobalElements+rnst.GetMaxNumExtraIterations());
   
   // Print out the result
   if (verbose1) std::cout << "Computed Solution = " << std::endl;
