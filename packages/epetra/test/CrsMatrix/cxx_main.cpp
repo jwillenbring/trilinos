@@ -1125,6 +1125,6 @@ int check_graph_sharing(Epetra_Comm& Comm)
     }
   }
 
-  return(0);
+  return(1);
 }
 
