@@ -18,7 +18,7 @@
 #   "default" (see the default listed below).
 #
 #   <cmake-and-version> is the SEMS module name for the CMake and its version,
-#   e.g. 'sems-cmake/3.5.2' or 'atdm-cmake/3.11.1'.  To use the default just
+#   e.g. 'sems-cmake/3.10.3' or 'atdm-cmake/3.11.1'.  To use the default just
 #   pass in "default" (see the default listed below).
 #
 # Once sourced, this script also loads the SEMS modules for all of the TPLs
@@ -39,7 +39,7 @@
 #
 # or one can specify a different cmake/version with:
 #
-#   $ source load_sems_dev_env.sh default default sems-cmake/3.3.2
+#   $ source load_sems_dev_env.sh default default atdm-cmake/3.11.1
 #
 # This script will purge the current modules before loading the requested env
 # modules.
