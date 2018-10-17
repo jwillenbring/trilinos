@@ -18,4 +18,3 @@ ${SCRIPTPATH}/PullRequestLinuxDriver-Merge.sh
 
 # Call the script to handle driving the testing
 ${SCRIPTPATH}/PullRequestLinuxDriver-Test.sh
-
