@@ -222,7 +222,7 @@ elif [ "Trilinos_pullrequest_gcc_4.9.3" == "${JOB_BASE_NAME:?}" ] ; then
     fi
 elif [ "Trilinos_pullrequest_gcc_4.9.3_SERIAL" == "${JOB_BASE_NAME:?}" ] ; then
     # TODO: Update this to use a 4.9.3 SERIAL testing environment script.
-    source ${TRILINOS_DRIVER_SRC_DIR}/cmake/std/sems/PullRequestGCC4.9.3TestingEnvSERIAL.sh 
+    source ${TRILINOS_DRIVER_SRC_DIR}/cmake/std/sems/PullRequestGCC4.9.3TestingEnvSERIAL.sh
     ierror=$?
     if [[ $ierror != 0 ]]; then
         echo -e "There was an issue loading the gcc environment. The error code was: $ierror"
@@ -240,6 +240,13 @@ elif [ "Trilinos_pullrequest_gcc_7.3.0" == "${JOB_BASE_NAME:?}" ] ; then
     ierror=$?
     if [[ $ierror != 0 ]]; then
         echo -e "There was an issue loading the gcc environment. The error code was: $ierror"
+        exit $ierror
+    fi
+elif [ "Trilinos_pullrequest_cuda_9.2" == "${JOB_BASE_NAME:?}" ] ; then
+    source ${TRILINOS_DRIVER_SRC_DIR}/cmake/std/sems/PullRequestCuda9.2TestingEnv.sh
+    ierror=$?
+    if [[ $ierror != 0 ]]; then
+        echo -e "There was an issue loading the cuda environment. The error code was: $ierror"
         exit $ierror
     fi
 elif [ "Trilinos_pullrequest_intel_17.0.1" == "${JOB_BASE_NAME:?}" ] ; then
@@ -311,7 +318,7 @@ cmake -P packageEnables.cmake
 
 build_name="PR-$PULLREQUESTNUM-test-$JOB_BASE_NAME-$BUILD_NUMBER"
 
-#This should be runnable from anywhere, but all the tests so far have been from the 
+#This should be runnable from anywhere, but all the tests so far have been from the
 #same dir the simple_testing.cmake file was in.
 cd TFW_testing_single_configure_prototype &> /dev/null
 echo -e "Set CWD = `pwd`"
@@ -330,6 +337,8 @@ else
         CONFIG_SCRIPT=PullRequestLinuxGCC7.2.0TestingSettings.cmake
     elif [ "Trilinos_pullrequest_gcc_7.3.0" == "${JOB_BASE_NAME:?}" ]; then
         CONFIG_SCRIPT=PullRequestLinuxGCC7.3.0TestingSettings.cmake
+    elif [ "Trilinos_pullrequest_cuda_9.2" == "${JOB_BASE_NAME:?}" ]; then
+        CONFIG_SCRIPT=PullRequestLinuxCuda9.2TestingSettings.cmake
     fi
 fi
 
@@ -354,6 +363,3 @@ fi
 # Reset to known directory location.
 # - ${WORKSPACE} is set by Jenkins and points to the root workspace directory.
 cd ${WORKSPACE:?}
-
-
-
