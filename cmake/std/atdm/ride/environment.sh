@@ -71,6 +71,9 @@ export ATDM_CONFIG_BUILD_COUNT=64
 
 module purge
 
+module load git/2.10.1
+# NOTE: Must load a git module since /usr/bin/git does not exist on the compute nodes.
+
 if [ "$ATDM_CONFIG_NODE_TYPE" == "OPENMP" ] ; then
   export ATDM_CONFIG_CTEST_PARALLEL_LEVEL=16
   export OMP_NUM_THREADS=2
