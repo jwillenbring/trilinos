@@ -132,6 +132,14 @@ export ATDM_CONFIG_BUILD_COUNT=64
 # NOTE: Above settings are used for running on a single rhel7F (Firestone,
 # Dual-Socket POWER8, 8 cores per socket, K80 GPUs) node.
 
+<<<<<<< HEAD
+=======
+module purge
+
+module load git/2.10.1
+# NOTE: Must load a git module since /usr/bin/git does not exist on the compute nodes.
+
+>>>>>>> add module git (not sems-git) to environment
 if [ "$ATDM_CONFIG_NODE_TYPE" == "OPENMP" ] ; then
   export ATDM_CONFIG_CTEST_PARALLEL_LEVEL=16
   export OMP_NUM_THREADS=2
