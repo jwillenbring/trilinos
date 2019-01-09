@@ -8,7 +8,8 @@ if [ "${Trilinos_CTEST_DO_ALL_AT_ONCE}" == "" ] ; then
   export Trilinos_CTEST_DO_ALL_AT_ONCE=TRUE
 fi
 
-source $WORKSPACE/Trilinos/cmake/std/atdm/load-env.sh $JOB_NAME
+# comment out sh and add what we need individually.
+#source $WORKSPACE/Trilinos/cmake/std/atdm/load-env.sh $JOB_NAME
 
 set -x
 

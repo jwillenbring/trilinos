@@ -5,7 +5,7 @@
 
 #No SEMS NFS mount on ride
 #source /projects/sems/modulefiles/utils/sems-modules-init.sh
-
+module load git/2.10.1
 module load devpack/20180521/openmpi/2.1.2/gcc/7.2.0/cuda/9.2.88
 module swap openblas/0.2.20/gcc/7.2.0 netlib/3.8.0/gcc/7.2.0
 export OMPI_CXX=`which g++`
