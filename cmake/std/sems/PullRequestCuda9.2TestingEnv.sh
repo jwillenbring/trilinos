@@ -16,7 +16,7 @@ export CUDA_LAUNCH_BLOCKING=1
 # HRS Tpath is the path at which a copy of Trilinos is available,
 # HRS export NVCC_WRAPPER_DEFAULT_COMPILER=/<Gpath>/bin/g++
 # Gpath is the path to the base of a C++11 compliant GCC installation
-export NVCC_WRAPPER_DEFAULT_COMPILER=$(WORKSPACE)/Trilinos/packages/kokkos/bin/nvcc_wrapper
+export NVCC_WRAPPER_DEFAULT_COMPILER=$WORKSPACE/Trilinos/packages/kokkos/bin/nvcc_wrapper
 
 # Use manually installed cmake and ninja to try to avoid module loading
 # problems (see TRIL-208)
