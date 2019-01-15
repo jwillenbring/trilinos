@@ -31,6 +31,8 @@ set (TPL_ENABLE_BoostLib OFF CACHE BOOL "Set by default for CUDA PR testing")
 
 # Temporary options to clean up build
 set (Trilinos_ENABLE_SEACAS OFF CACHE BOOL "Temporary disable for CUDA PR testing")
+set (Trilinos_ENABLE_STK OFF CACHE BOOL "Temporary disable for CUDA PR testing")
+set (Trilinos_ENABLE_Moertel OFF CACHE BOOL "Temporary disable for CUDA PR testing")
 
 include("${CMAKE_CURRENT_LIST_DIR}/PullRequestLinuxCommonTestingSettings.cmake")
 
