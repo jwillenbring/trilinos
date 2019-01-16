@@ -27,12 +27,14 @@ set (TPL_ENABLE_ParMETIS OFF CACHE BOOL "Set by default for CUDA PR testing")
 set (TPL_Netcdf_LIBRARIES "-L${BOOST_ROOT}/lib;-L${NETCDF_ROOT}/lib;-L${NETCDF_ROOT}/lib;-L${PNETCDF_ROOT}/lib;-L${HDF5_ROOT}/lib;${BOOST_ROOT}/lib/libboost_program_options.a;${BOOST_ROOT}/lib/libboost_system.a;${NETCDF_ROOT}/lib/libnetcdf.a;${PNETCDF_ROOT}/lib/libpnetcdf.a;${HDF5_ROOT}/lib/libhdf5_hl.a;${HDF5_ROOT}/lib/libhdf5.a;-lz;-ldl" CACHE STRING "Set by default for CUDA PR testing")
 # SuperLU is available on ride and could be enabled for the CUDA PR build
 set (TPL_ENABLE_SuperLU OFF CACHE BOOL "Set by default for CUDA PR testing")
-set (TPL_ENABLE_BoostLib OFF CACHE BOOL "Set by default for CUDA PR testing")
+set (TPL_BoostLib_INCLUDE_DIRS "/home/projects/ppc64le-pwr8/boost/1.65.1/gcc/7.2.0/include" CACHE STRING "Set by default for CUDA PR testing")
+set (TPL_BoostLib_LIBRARIES "/home/projects/ppc64le-pwr8/boost/1.65.1/gcc/7.2.0/lib/libboost_program_options.a;/home/projects/ppc64le-pwr8/boost/1.65.1/gcc/7.2.0/lib/libboost_system.a" CACHE STRING "Set by default for CUDA PR testing")
+set (Trilinos_ENABLE_Moertel OFF CACHE BOOL "Temporary disable for CUDA PR testing")
 
 # Temporary options to clean up build
-set (Trilinos_ENABLE_SEACAS OFF CACHE BOOL "Temporary disable for CUDA PR testing")
-set (Trilinos_ENABLE_STK OFF CACHE BOOL "Temporary disable for CUDA PR testing")
-set (Trilinos_ENABLE_Moertel OFF CACHE BOOL "Temporary disable for CUDA PR testing")
-set (Trilinos_ENABLE_MueLu OFF CACHE BOOL "Temporary disable for CUDA PR testing")
+#set (Trilinos_ENABLE_SEACAS OFF CACHE BOOL "Temporary disable for CUDA PR testing")
+#set (Trilinos_ENABLE_STK OFF CACHE BOOL "Temporary disable for CUDA PR testing")
+#set (Trilinos_ENABLE_MueLu OFF CACHE BOOL "Temporary disable for CUDA PR testing")
+
 include("${CMAKE_CURRENT_LIST_DIR}/PullRequestLinuxCommonTestingSettings.cmake")
 
