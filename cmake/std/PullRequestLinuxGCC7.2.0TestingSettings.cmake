@@ -20,3 +20,6 @@ set (Teko_DISABLE_LSCSTABALIZED_TPETRA_ALPAH_INV_D ON CACHE BOOL "Temporarily di
 
 include("${CMAKE_CURRENT_LIST_DIR}/PullRequestLinuxCommonTestingSettings.cmake")
 
+#Adding warnings as errors flags to this PR build
+#This should fail.
+set (CMAKE_CXX_FLAGS "-ansi -Werror -Wno-unknown-pragmas -Wno-narrowing -Wno-pragmas -Wno-delete-non-virtual-dtor" CACHE STRING "Warnings as errors setting")
