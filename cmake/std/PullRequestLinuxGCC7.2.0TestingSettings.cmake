@@ -23,7 +23,8 @@ include("${CMAKE_CURRENT_LIST_DIR}/PullRequestLinuxCommonTestingSettings.cmake")
 #Adding warnings as errors flags to this PR build
 #This should fail.
 #set (CMAKE_CXX_FLAGS "-ansi -Werror -Wno-unknown-pragmas -Wno-narrowing -Wno-pragmas -Wno-delete-non-virtual-dtor" CACHE STRING "Warnings as errors setting")
+set (Teuchos_CXX_FLAGS "-ansi -Werror -Wno-unknown-pragmas -Wno-narrowing -Wno-pragmas -Wno-delete-non-virtual-dtor" CACHE STRING "Warnings as errors setting")
 #set (Kokkos_CXX_FLAGS "-ansi -Werror -Wno-unknown-pragmas -Wno-narrowing -Wno-pragmas -Wno-delete-non-virtual-dtor" CACHE STRING "Warnings as errors setting")
-set (Pike_CXX_FLAGS "-ansi -Werror -Wno-unknown-pragmas -Wno-narrowing -Wno-pragmas -Wno-delete-non-virtual-dtor" CACHE STRING "Warnings as errors setting")
-set (Shards_CXX_FLAGS "-ansi -Werror -Wno-unknown-pragmas -Wno-narrowing -Wno-pragmas -Wno-delete-non-virtual-dtor" CACHE STRING "Warnings as errors setting")
-set (KokkosKernels_CXX_FLAGS "-ansi -Werror -Wno-unknown-pragmas -Wno-narrowing -Wno-pragmas -Wno-delete-non-virtual-dtor" CACHE STRING "Warnings as errors setting")
+#set (Pike_CXX_FLAGS "-ansi -Werror -Wno-unknown-pragmas -Wno-narrowing -Wno-pragmas -Wno-delete-non-virtual-dtor" CACHE STRING "Warnings as errors setting")
+#set (Shards_CXX_FLAGS "-ansi -Werror -Wno-unknown-pragmas -Wno-narrowing -Wno-pragmas -Wno-delete-non-virtual-dtor" CACHE STRING "Warnings as errors setting")
+#set (KokkosKernels_CXX_FLAGS "-ansi -Werror -Wno-unknown-pragmas -Wno-narrowing -Wno-pragmas -Wno-delete-non-virtual-dtor" CACHE STRING "Warnings as errors setting")
