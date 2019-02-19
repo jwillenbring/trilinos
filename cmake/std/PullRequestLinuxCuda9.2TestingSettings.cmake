@@ -17,6 +17,7 @@ set (TPL_ENABLE_CUDA ON CACHE BOOL "Set by default for CUDA PR testing")
 set (Kokkos_ENABLE_Cuda ON CACHE BOOL "Set by default for CUDA PR testing")
 set (Kokkos_ENABLE_Cuda_UVM ON CACHE BOOL "Set by default for CUDA PR testing")
 set (KOKKOS_ARCH Power8 CACHE STRING "Set by default for CUDA PR testing")
+set (KOKKOS_ENABLE_CUDA_RELOCATABLE_DEVICE_CODE ON CACHE BOOL "Set by default for CUDA PR testing")
 
 # Options set to match the ATDM build
 set (Trilinos_ENABLE_DEBUG OFF CACHE BOOL "Set by default for CUDA PR testing")
