@@ -50,7 +50,7 @@ jobs:
           metrix++ view --db-file=before.pr.db >& results.before.txt
           # Complexity level(s) chosen should be customized per project
           metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:20 --warn-mode=trend >& results.trend.20.txt
-          metrix++ limit --db-file=hypre.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:20 --warn-mode=touched >& results.touched.20.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:20 --warn-mode=touched >& results.touched.20.txt
         continue-on-error: true
       - name: View 20 plus complexity regions trending up
         run: more results.trend.20.txt
