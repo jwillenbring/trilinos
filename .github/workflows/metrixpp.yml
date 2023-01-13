@@ -1,0 +1,92 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# Metrix++ is a tool to collect and analyze code metrics.
+# More details at https://metrixplusplus.github.io/metrixplusplus/
+
+# To-do: save output files to GitHub
+# To-do: consider proving detail at a more granular (commit) level
+
+name: Metrix++
+
+on:
+  pull_request:
+#    branches: [ $default-branch, $protected-branches ]
+#  pull_request:
+#    # The branches below must be a subset of the branches above
+#    branches: [ $default-branch ]
+# Could run on a schedule to capture larger trends
+#  schedule:
+#    - cron: $cron-weekly
+
+jobs:
+  metrixpp:
+    name: Run Metrix++
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+        # fetch all commits so we can go back to the beginning of the PR and measure change
+          fetch-depth: 0
+      - name: Install Metrix++
+        run: pip install metrixpp
+      - name: Run Metrix++ after PR
+        run: metrix++ collect --std.code.complexity.cyclomatic --db-file after.pr.db .
+        continue-on-error: true
+      - name: Checkout PR base sha
+        run:  git checkout ${{ github.event.pull_request.base.sha }}
+      - name: Run Metrix++ before PR
+        run: metrix++ collect --std.code.complexity.cyclomatic --db-file before.pr.db .
+        continue-on-error: true
+      - name: Process results
+        run: |
+          metrix++ view --db-file=after.pr.db >& results.after.txt
+          metrix++ view --db-file=before.pr.db >& results.before.txt
+          # Complexity level(s) chosen should be customized per project
+          # The defaults are based on analysis from 
+          # Watson, A. & McCabe, T., (NIST 500-235), 
+          # Structured Testing: a testing methodology using the cyclomatic complexity metric, 
+          # Special Publication 500-235, National Institute of Standards and Technology, Sept. 1996
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:10 --warn-mode=trend >& results.trend.10.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:10 --warn-mode=touched >& results.touched.10.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:30 --warn-mode=trend >& results.trend.30.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:30 --warn-mode=touched >& results.touched.30.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:50 --warn-mode=trend >& results.trend.50.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:50 --warn-mode=touched >& results.touched.50.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:75 --warn-mode=trend >& results.trend.75.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:75 --warn-mode=touched >& results.touched.75.txt
+          # A threshold could be chosen from above to set a hard limit on complexity. For example, if a region of complexity 75 or more is trending up, 
+          # the GitHub Action could be set to continue-on-error: false
+        continue-on-error: true
+      - name: View 10 plus complexity regions trending up
+        run: more results.trend.10.txt
+      - name: View 10 plus complexity regions touched
+        run: more results.touched.10.txt
+      - name: View 30 plus complexity regions trending up
+        run: more results.trend.30.txt
+      - name: View 30 plus complexity regions touched
+        run: more results.touched.30.txt
+      - name: View 50 plus complexity regions trending up
+        run: more results.trend.50.txt
+      - name: View 50 plus complexity regions touched
+        run: more results.touched.50.txt
+      - name: View 75 plus complexity regions trending up
+        run: more results.trend.75.txt
+      - name: View 75 plus complexity regions touched
+        run: more results.touched.75.txt
+      - name: View complexity after
+        run: more results.after.txt
+      - name: View complexity before
+        run: more results.before.txt
+#need to change this to text
+#      - name: Upload output to GitHub
+#        uses: github/codeql-action/upload-sarif@v2
+#        with:
+#          sarif_file: metrixpp-output.sarif
+#          wait-for-processing: true
