@@ -53,7 +53,6 @@ jobs:
           # Watson, A. & McCabe, T., (NIST 500-235), 
           # Structured Testing: a testing methodology using the cyclomatic complexity metric, 
           # Special Publication 500-235, National Institute of Standards and Technology, Sept. 1996
-          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:10 --warn-mode=trend >& results.trend.10.txt
           metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:10 --warn-mode=touched >& results.touched.10.txt
           metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:30 --warn-mode=trend >& results.trend.30.txt
           metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:30 --warn-mode=touched >& results.touched.30.txt
@@ -64,8 +63,11 @@ jobs:
           # A threshold could be chosen from above to set a hard limit on complexity. For example, if a region of complexity 75 or more is trending up, 
           # the GitHub Action could be set to continue-on-error: false
         continue-on-error: true
-      - name: View 10 plus complexity regions trending up
-        run: more results.trend.10.txt
+      - name: 10 plus complexity regions trending up
+        run: |
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:10 --warn-mode=trend >& results.trend.10.txt
+          more results.trend.10.txt
+        continue-on-error: true
       - name: View 10 plus complexity regions touched
         run: more results.touched.10.txt
       - name: View 30 plus complexity regions trending up
