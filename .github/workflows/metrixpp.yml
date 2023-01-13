@@ -49,13 +49,37 @@ jobs:
           metrix++ view --db-file=after.pr.db >& results.after.txt
           metrix++ view --db-file=before.pr.db >& results.before.txt
           # Complexity level(s) chosen should be customized per project
-          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:20 --warn-mode=trend >& results.trend.20.txt
-          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:20 --warn-mode=touched >& results.touched.20.txt
+          # The defaults are based on analysis from 
+          # Watson, A. & McCabe, T., (NIST 500-235), 
+          # Structured Testing: a testing methodology using the cyclomatic complexity metric, 
+          # Special Publication 500-235, National Institute of Standards and Technology, Sept. 1996
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:10 --warn-mode=trend >& results.trend.10.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:10 --warn-mode=touched >& results.touched.10.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:30 --warn-mode=trend >& results.trend.30.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:30 --warn-mode=touched >& results.touched.30.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:50 --warn-mode=trend >& results.trend.50.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:50 --warn-mode=touched >& results.touched.50.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:75 --warn-mode=trend >& results.trend.75.txt
+          metrix++ limit --db-file=after.pr.db --db-file-prev=before.pr.db --max-limit=std.code.complexity:cyclomatic:75 --warn-mode=touched >& results.touched.75.txt
+          # A threshold could be chosen from above to set a hard limit on complexity. For example, if a region of complexity 75 or more is trending up, 
+          # the GitHub Action could be set to continue-on-error: false
         continue-on-error: true
-      - name: View 20 plus complexity regions trending up
-        run: more results.trend.20.txt
-      - name: View 20 plus complexity regions touched
-        run: more results.touched.20.txt
+      - name: View 10 plus complexity regions trending up
+        run: more results.trend.10.txt
+      - name: View 10 plus complexity regions touched
+        run: more results.touched.10.txt
+      - name: View 30 plus complexity regions trending up
+        run: more results.trend.30.txt
+      - name: View 30 plus complexity regions touched
+        run: more results.touched.30.txt
+      - name: View 50 plus complexity regions trending up
+        run: more results.trend.50.txt
+      - name: View 50 plus complexity regions touched
+        run: more results.touched.50.txt
+      - name: View 75 plus complexity regions trending up
+        run: more results.trend.75.txt
+      - name: View 75 plus complexity regions touched
+        run: more results.touched.75.txt
       - name: View complexity after
         run: more results.after.txt
       - name: View complexity before
