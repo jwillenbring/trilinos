@@ -1,0 +1,42 @@
+name: Replicate and Create Pull Requests
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+#env:
+  #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #MAIN_REPO_OWNER: <username>
+
+jobs:
+  replicate_and_create_pull_request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Fetch main repository
+        run: |
+          #git remote add main https://x-access-token:${{ env.GITHUB_TOKEN }}@github.com/${{ env.MAIN_REPO_OWNER }}/${{ github.repository }}.git
+          git remote add main https://@github.com/trilinos/Trilinos.git
+          git fetch main
+
+      - name: Create branch
+        run: |
+          git checkout -b ${{ github.event.pull_request.head.ref }} main/${{ github.event.pull_request.head.ref }}
+
+      - name: Push changes to fork
+        uses: ad-m/github-push-action@master
+        with:
+          #github_token: ${{ env.GITHUB_TOKEN }}
+          branch: ${{ github.event.pull_request.head.ref }}
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v2
+        with:
+          title: "[Mirrored] ${{ github.event.pull_request.title }}"
+          head: ${{ github.repository_owner }}:${{ github.event.pull_request.head.ref }}
+          base: ${{ github.event.pull_request.base.ref }}
+          body: ${{ github.event.pull_request.body }}
+          labels: ${{ github.event.pull_request.labels }}
