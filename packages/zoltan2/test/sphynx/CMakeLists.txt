@@ -1,18 +1,12 @@
 TRIBITS_ADD_EXECUTABLE(
-  Hello_World
-  SOURCES hello_world_main.cpp
-  COMM serial mpi
-  )
-
-TRIBITS_ADD_EXECUTABLE(
-   Matrix_Reader 
-   SOURCES reader.cpp
-   COMM serial mpi
+    Sphynx_Research_Driver
+    SOURCES Sphynx_Research_Driver.cpp
+    COMM serial mpi
 )
 
 TRIBITS_ADD_EXECUTABLE(
-    driver
-    SOURCES driver.cpp
+    Largest_Comp_To_Binary
+    SOURCES largestComponent2Binary.cpp
     COMM serial mpi
 )
 
